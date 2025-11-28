@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Metadata for Recipe</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 800px;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .btn-custom {
+            border-radius: 25px;
+            font-weight: bold;
+        }
+        .status-message {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Add Metadata Section -->
+    <div class="card p-4">
+        <h2 class="text-center mb-4">Add Metadata for Recipe</h2>
+        <form id="metadataForm">
+            <div class="mb-3">
+                <label for="recipeId" class="form-label">Recipe ID</label>
+                <input type="text" class="form-control" id="recipeId" name="recipe_id" placeholder="Enter Recipe ID" required>
+            </div>
+            <div class="mb-3">
+                <label for="views" class="form-label">Views</label>
+                <input type="number" class="form-control" id="views" name="views" value="0" required>
+            </div>
+            <div class="mb-3">
+                <label for="likes" class="form-label">Likes</label>
+                <input type="number" class="form-control" id="likes" name="likes" value="0" required>
+            </div>
+            <div class="mb-3">
+                <label for="tags" class="form-label">Tags</label>
+                <input type="text" class="form-control" id="tags" name="tags" placeholder="Enter Tags (comma separated)">
+            </div>
+            <button type="button" class="btn btn-custom w-100" onclick="addMetadata()">Add Metadata</button>
+        </form>
+
+        <!-- Status Message -->
+        <div id="statusMessage" class="status-message text-center"></div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Function to Add Metadata
+    function addMetadata() {
+        const recipeId = document.getElementById('recipeId').value;
+        const views = document.getElementById('views').value;
+        const likes = document.getElementById('likes').value;
+        const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim());
+
+        if (!recipeId || views === "" || likes === "") {
+            alert('Please fill in all fields.');
+            return;
+        }
+
+        const data = {
+            recipe_id: recipeId,
+            views: views,
+            likes: likes,
+            tags: tags
+        };
+
+        fetch(`/add_metadata/${recipeId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('statusMessage').textContent = data.message || 'Metadata added successfully!';
+        })
+        .catch(error => {
+            document.getElementById('statusMessage').textContent = 'Error adding metadata.';
+        });
+    }
+</script>
+
+</body>
+</html>
